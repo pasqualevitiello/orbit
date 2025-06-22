@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronsUpDownIcon, ChevronsDownUpIcon } from "lucide-react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -14,63 +14,23 @@ interface SidebarProps {
   currentPath: string
 }
 
-export function Sidebar({
-  components,
-  currentPath,
-}: SidebarProps) {
-  const router = useRouter()
-  
-  // Extract component and variant from current path
-  const pathParts = currentPath.split('/')
-  const selectedComponent = pathParts[2] || ''
-  const selectedVariant = pathParts[3] || ''
-
-  const [openComponents, setOpenComponents] = useState<Set<string>>(new Set([selectedComponent]))
+// Custom hook for search functionality
+const useComponentSearch = (components: ComponentRegistry) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [focusedIndex, setFocusedIndex] = useState(-1)
 
-  // Update open components when selectedComponent changes
-  useEffect(() => {
-    if (selectedComponent) {
-      setOpenComponents((prev) => new Set([...prev, selectedComponent]))
+  const filteredComponents = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return Object.entries(components).sort(([a], [b]) => a.localeCompare(b))
     }
-  }, [selectedComponent])
+    
+    const query = searchQuery.toLowerCase().trim()
+    return Object.entries(components)
+      .filter(([componentName]) => componentName.toLowerCase().includes(query))
+      .sort(([a], [b]) => a.localeCompare(b))
+  }, [components, searchQuery])
 
-  // Reset focus when search query changes
-  useEffect(() => {
-    if (searchQuery) {
-      setFocusedIndex(0)
-    } else {
-      setFocusedIndex(-1)
-    }
-  }, [searchQuery])
-
-  const handleComponentToggle = (componentName: string, isOpen: boolean) => {
-    const newOpen = new Set(openComponents)
-
-    if (isOpen) {
-      // If opening, add to open set
-      newOpen.add(componentName)
-    } else {
-      // If closing, remove from open set
-      newOpen.delete(componentName)
-    }
-
-    setOpenComponents(newOpen)
-  }
-
-  const handleComponentClick = (componentName: string, isOpen: boolean, firstVariant: string) => {
-    if (isOpen) {
-      // If already open, collapse it
-      handleComponentToggle(componentName, false)
-    } else {
-      // If collapsed, navigate to first variant
-      router.push(`/components/${componentName}/${firstVariant}`)
-    }
-  }
-
-  // Handle keyboard navigation
-  const handleSearchKeyDown = (event: React.KeyboardEvent) => {
+  const handleSearchKeyDown = useCallback((event: React.KeyboardEvent) => {
     if (!searchQuery) return
 
     const totalElements = filteredComponents.length
@@ -85,30 +45,98 @@ export function Sidebar({
         event.preventDefault()
         setFocusedIndex((prev) => (prev - 1 + totalElements) % totalElements)
         break
-      case 'Enter':
-        event.preventDefault()
-        if (focusedIndex >= 0 && focusedIndex < totalElements) {
-          const [componentName, componentData] = filteredComponents[focusedIndex]
-          const firstVariant = Object.keys(componentData.variants)[0]
-          router.push(`/components/${componentName}/${firstVariant}`)
-        }
-        break
       case 'Escape':
         setSearchQuery("")
         setFocusedIndex(-1)
         break
     }
-  }
+  }, [searchQuery, filteredComponents.length])
 
-  // Filter components based on search query
-  const filteredComponents = Object.entries(components)
-    .filter(([componentName, componentData]) => {
-      const query = searchQuery.toLowerCase()
-      
-      // Only check if component name matches
-      return componentName.toLowerCase().includes(query)
+  // Reset focus when search query changes
+  useEffect(() => {
+    if (searchQuery) {
+      setFocusedIndex(0)
+    } else {
+      setFocusedIndex(-1)
+    }
+  }, [searchQuery])
+
+  return {
+    searchQuery,
+    setSearchQuery,
+    focusedIndex,
+    filteredComponents,
+    handleSearchKeyDown
+  }
+}
+
+export function Sidebar({
+  components,
+  currentPath,
+}: SidebarProps) {
+  const router = useRouter()
+  
+  // Extract component and variant from current path
+  const pathParts = currentPath.split('/')
+  const selectedComponent = pathParts[2] || ''
+  const selectedVariant = pathParts[3] || ''
+
+  const [openComponents, setOpenComponents] = useState<Set<string>>(new Set([selectedComponent]))
+
+  // Use custom search hook
+  const {
+    searchQuery,
+    setSearchQuery,
+    focusedIndex,
+    filteredComponents,
+    handleSearchKeyDown
+  } = useComponentSearch(components)
+
+  // Update open components when selectedComponent changes (optimized)
+  useEffect(() => {
+    if (selectedComponent && !openComponents.has(selectedComponent)) {
+      setOpenComponents((prev) => new Set([...prev, selectedComponent]))
+    }
+  }, [selectedComponent, openComponents])
+
+  const handleComponentToggle = useCallback((componentName: string, isOpen: boolean) => {
+    setOpenComponents((prev) => {
+      const newOpen = new Set(prev)
+      if (isOpen) {
+        newOpen.add(componentName)
+      } else {
+        newOpen.delete(componentName)
+      }
+      return newOpen
     })
-    .sort(([a], [b]) => a.localeCompare(b))
+  }, [])
+
+  const handleComponentClick = useCallback((componentName: string, isOpen: boolean, firstVariant: string) => {
+    if (isOpen) {
+      handleComponentToggle(componentName, false)
+    } else {
+      router.push(`/components/${componentName}/${firstVariant}`)
+    }
+  }, [handleComponentToggle, router])
+
+  // Handle Enter key for navigation
+  const handleEnterNavigation = useCallback(() => {
+    if (focusedIndex >= 0 && focusedIndex < filteredComponents.length) {
+      const [componentName, componentData] = filteredComponents[focusedIndex]
+      const firstVariant = Object.keys(componentData.variants)[0]
+      router.push(`/components/${componentName}/${firstVariant}`)
+    }
+  }, [focusedIndex, filteredComponents, router])
+
+  // Enhanced keyboard handler
+  const handleEnhancedKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      handleEnterNavigation()
+      return
+    }
+    handleSearchKeyDown(event)
+  }, [handleSearchKeyDown, handleEnterNavigation])
 
   return (
     <div className="py-5 font-sans space-y-5">
@@ -120,7 +148,11 @@ export function Sidebar({
       </div>
 
       <div className="px-5">
-        <Search value={searchQuery} onChange={setSearchQuery} onKeyDown={handleSearchKeyDown} />
+        <Search 
+          value={searchQuery} 
+          onChange={setSearchQuery} 
+          onKeyDown={handleEnhancedKeyDown} 
+        />
       </div>
 
       <nav>
@@ -173,6 +205,13 @@ export function Sidebar({
             </Collapsible>
           )
         })}
+        
+        {searchQuery && filteredComponents.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-sm text-muted-foreground">No components found</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">Try a different search term</p>
+          </div>
+        )}
       </nav>
     </div>
   )
