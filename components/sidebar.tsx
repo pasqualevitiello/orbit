@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronsUpDownIcon, ChevronsDownUpIcon } from "lucide-react"
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -12,62 +12,6 @@ import Search from "@/components/search"
 interface SidebarProps {
   components: ComponentRegistry
   currentPath: string
-}
-
-// Custom hook for search functionality
-const useComponentSearch = (components: ComponentRegistry) => {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [focusedIndex, setFocusedIndex] = useState(-1)
-
-  const filteredComponents = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return Object.entries(components).sort(([a], [b]) => a.localeCompare(b))
-    }
-    
-    const query = searchQuery.toLowerCase().trim()
-    return Object.entries(components)
-      .filter(([componentName]) => componentName.toLowerCase().includes(query))
-      .sort(([a], [b]) => a.localeCompare(b))
-  }, [components, searchQuery])
-
-  const handleSearchKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!searchQuery) return
-
-    const totalElements = filteredComponents.length
-    if (totalElements === 0) return
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault()
-        setFocusedIndex((prev) => (prev + 1) % totalElements)
-        break
-      case 'ArrowUp':
-        event.preventDefault()
-        setFocusedIndex((prev) => (prev - 1 + totalElements) % totalElements)
-        break
-      case 'Escape':
-        setSearchQuery("")
-        setFocusedIndex(-1)
-        break
-    }
-  }, [searchQuery, filteredComponents.length])
-
-  // Reset focus when search query changes
-  useEffect(() => {
-    if (searchQuery) {
-      setFocusedIndex(0)
-    } else {
-      setFocusedIndex(-1)
-    }
-  }, [searchQuery])
-
-  return {
-    searchQuery,
-    setSearchQuery,
-    focusedIndex,
-    filteredComponents,
-    handleSearchKeyDown
-  }
 }
 
 export function Sidebar({
@@ -82,61 +26,89 @@ export function Sidebar({
   const selectedVariant = pathParts[3] || ''
 
   const [openComponents, setOpenComponents] = useState<Set<string>>(new Set([selectedComponent]))
+  const [searchQuery, setSearchQuery] = useState("")
+  const [focusedIndex, setFocusedIndex] = useState(-1)
 
-  // Use custom search hook
-  const {
-    searchQuery,
-    setSearchQuery,
-    focusedIndex,
-    filteredComponents,
-    handleSearchKeyDown
-  } = useComponentSearch(components)
-
-  // Update open components when selectedComponent changes (optimized)
+  // Update open components when selectedComponent changes
   useEffect(() => {
-    if (selectedComponent && !openComponents.has(selectedComponent)) {
+    if (selectedComponent) {
       setOpenComponents((prev) => new Set([...prev, selectedComponent]))
     }
-  }, [selectedComponent, openComponents])
+  }, [selectedComponent])
 
-  const handleComponentToggle = useCallback((componentName: string, isOpen: boolean) => {
-    setOpenComponents((prev) => {
-      const newOpen = new Set(prev)
-      if (isOpen) {
-        newOpen.add(componentName)
-      } else {
-        newOpen.delete(componentName)
-      }
-      return newOpen
-    })
-  }, [])
+  // Reset focus when search query changes
+  useEffect(() => {
+    if (searchQuery) {
+      setFocusedIndex(0)
+    } else {
+      setFocusedIndex(-1)
+    }
+  }, [searchQuery])
 
-  const handleComponentClick = useCallback((componentName: string, isOpen: boolean, firstVariant: string) => {
+  const handleComponentToggle = (componentName: string, isOpen: boolean) => {
+    const newOpen = new Set(openComponents)
+
     if (isOpen) {
+      // If opening, add to open set
+      newOpen.add(componentName)
+    } else {
+      // If closing, remove from open set
+      newOpen.delete(componentName)
+    }
+
+    setOpenComponents(newOpen)
+  }
+
+  const handleComponentClick = (componentName: string, isOpen: boolean, firstVariant: string) => {
+    if (isOpen) {
+      // If already open, collapse it
       handleComponentToggle(componentName, false)
     } else {
+      // If collapsed, navigate to first variant
       router.push(`/components/${componentName}/${firstVariant}`)
     }
-  }, [handleComponentToggle, router])
+  }
 
-  // Handle Enter key for navigation
-  const handleEnterNavigation = useCallback(() => {
-    if (focusedIndex >= 0 && focusedIndex < filteredComponents.length) {
-      const [componentName, componentData] = filteredComponents[focusedIndex]
-      const firstVariant = Object.keys(componentData.variants)[0]
-      router.push(`/components/${componentName}/${firstVariant}`)
-    }
-  }, [focusedIndex, filteredComponents, router])
+  // Handle keyboard navigation
+  const handleSearchKeyDown = (event: React.KeyboardEvent) => {
+    if (!searchQuery) return
 
-  // Enhanced keyboard handler
-  const handleEnhancedKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      handleEnterNavigation()
-      return
+    const totalElements = filteredComponents.length
+    if (totalElements === 0) return
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault()
+        setFocusedIndex((prev) => (prev + 1) % totalElements)
+        break
+      case 'ArrowUp':
+        event.preventDefault()
+        setFocusedIndex((prev) => (prev - 1 + totalElements) % totalElements)
+        break
+      case 'Enter':
+        event.preventDefault()
+        if (focusedIndex >= 0 && focusedIndex < totalElements) {
+          const [componentName, componentData] = filteredComponents[focusedIndex]
+          const firstVariant = Object.keys(componentData.variants)[0]
+          router.push(`/components/${componentName}/${firstVariant}`)
+        }
+        break
+      case 'Escape':
+        setSearchQuery("")
+        setFocusedIndex(-1)
+        break
     }
-    handleSearchKeyDown(event)
-  }, [handleSearchKeyDown, handleEnterNavigation])
+  }
+
+  // Filter components based on search query
+  const filteredComponents = Object.entries(components)
+    .filter(([componentName, componentData]) => {
+      const query = searchQuery.toLowerCase()
+      
+      // Only check if component name matches
+      return componentName.toLowerCase().includes(query)
+    })
+    .sort(([a], [b]) => a.localeCompare(b))
 
   return (
     <div className="py-5 font-sans space-y-5">
@@ -148,69 +120,67 @@ export function Sidebar({
       </div>
 
       <div className="px-5">
-        <Search 
-          value={searchQuery} 
-          onChange={setSearchQuery} 
-          onKeyDown={handleEnhancedKeyDown} 
-        />
+        <Search value={searchQuery} onChange={setSearchQuery} onKeyDown={handleSearchKeyDown} />
       </div>
 
-      <nav>
-        {filteredComponents.map(([componentName, componentData], index) => {
-          const isOpen = openComponents.has(componentName)
-          const isSelected = selectedComponent === componentName
-          const firstVariant = Object.keys(componentData.variants)[0]
-          const isFocused = searchQuery && focusedIndex === index
+      {filteredComponents.length > 1 ? (
+        <nav>
+          {filteredComponents.map(([componentName, componentData], index) => {
+            const isOpen = openComponents.has(componentName)
+            const isSelected = selectedComponent === componentName
+            const firstVariant = Object.keys(componentData.variants)[0]
+            const isFocused = searchQuery && focusedIndex === index
 
-          return (
-            <Collapsible
-              key={componentName}
-              open={isOpen}
-              onOpenChange={(open) => handleComponentToggle(componentName, open)}
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  data-selected={isSelected}
-                  data-open={isOpen}
-                  data-focused={isFocused}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleComponentClick(componentName, isOpen, firstVariant)}
-                  className="w-full text-[15px] md:text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-8 md:h-7 not-focus-visible:not-data-[focused=true]:data-[selected=true]:bg-muted focus-visible:ring-0 focus-visible:bg-black/8 data-[focused=true]:bg-black/8"
-                >
-                  <span className="font-medium truncate">{componentName}</span>
-                  {isOpen ? <ChevronsDownUpIcon className="size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
-                </Button>
-              </CollapsibleTrigger>
+            return (
+              <Collapsible
+                key={componentName}
+                open={isOpen}
+                onOpenChange={(open) => handleComponentToggle(componentName, open)}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    data-selected={isSelected}
+                    data-open={isOpen}
+                    data-focused={isFocused}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleComponentClick(componentName, isOpen, firstVariant)}
+                    className="w-full text-[15px] md:text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-8 md:h-7 not-focus-visible:not-data-[focused=true]:data-[selected=true]:bg-muted focus-visible:ring-0 focus-visible:bg-black/8 data-[focused=true]:bg-black/8"
+                  >
+                    <span className="font-medium truncate">{componentName}</span>
+                    {isOpen ? <ChevronsDownUpIcon className="size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
+                  </Button>
+                </CollapsibleTrigger>
 
-              <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden ease-in-out duration-150">
-                <div className="flex flex-col relative my-1 before:absolute before:inset-y-0 before:start-5 before:border-l before:border-border">
-                  {Object.keys(componentData.variants).map((variantName) => {
-                    const href = `/components/${componentName}/${variantName}`
-                    const isActive = currentPath === href
+                <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden ease-in-out duration-150">
+                  <div className="flex flex-col gap-1 relative my-1 before:absolute before:inset-y-0 before:start-5 before:border-l before:border-border">
+                    {Object.keys(componentData.variants).map((variantName) => {
+                      const href = `/components/${componentName}/${variantName}`
+                      const isActive = currentPath === href
 
-                    return (
-                      <Link
-                        key={variantName}
-                        href={href}
-                        aria-current={isActive ? "page" : undefined}
-                        className="inline-flex hover:text-foreground relative before:absolute before:inset-y-0 before:start-5 before:border-l before:border-transparent hover:before:border-primary/25 text-[15px] md:text-[13px] text-muted-foreground aria-[current]:before:border-primary aria-[current]:font-medium aria-[current]:text-foreground ps-8.5 pe-5 py-0.5 focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
-                      >
-                        {variantName}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          )
-        })}   
-      </nav>
-      {searchQuery && filteredComponents.length === 0 && (
-        <div className="text-center px-5">
-          <p className="text-[13px] text-muted-foreground">No components found</p>
+                      return (
+                        <Link
+                          key={variantName}
+                          href={href}
+                          aria-current={isActive ? "page" : undefined}
+                          className="inline-flex relative before:absolute before:inset-y-0 before:start-5 before:border-l before:border-transparent hover:before:border-primary/25 text-[15px] md:text-[13px] text-muted-foreground aria-[current]:before:border-primary aria-[current]:font-medium aria-[current]:text-foreground ps-8.5 pe-5 focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
+                        >
+                          {variantName}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )
+          })}
+        </nav>
+      ) : (
+        <div className="text-center">
+          <p className="text-[13px] text-muted-foreground">{searchQuery ? "No components found" : "Add some components to get started"}</p>
         </div>
       )}
+
     </div>
   )
 }
