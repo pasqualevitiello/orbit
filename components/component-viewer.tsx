@@ -9,6 +9,7 @@ import { CodeViewer } from "@/components/code-viewer"
 import { componentRegistry, ComponentRegistry } from "@/lib/components-registry"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
+import { cn } from "@/lib/utils"
 
 interface ComponentViewerProps {
   componentName: string
@@ -77,7 +78,7 @@ export function ComponentViewer({ componentName, variantName }: ComponentViewerP
         defaultSize={panelSizes.mainPanel} 
         minSize={30}
       >
-        <div className="p-5 h-full overflow-y-auto">
+        <div className={cn(`p-5 h-full overflow-y-auto ${componentData.viewerClassnames}`)}>
           <Component {...props} />
         </div>
       </ResizablePanel>

@@ -20,6 +20,7 @@ export interface ComponentData {
   component: React.ComponentType<any>
   controls: Record<string, ComponentControl>
   variants: Record<string, ComponentVariant>
+  viewerClassnames?: string
 }
 
 export interface ComponentRegistry {
@@ -29,6 +30,7 @@ export interface ComponentRegistry {
 export const componentRegistry: ComponentRegistry = {
   Button: {
     component: Button,
+    viewerClassnames: "flex items-center justify-center",
     controls: {
       children: {
         type: "text",
@@ -87,6 +89,7 @@ export const componentRegistry: ComponentRegistry = {
   },
   Input: {
     component: Input,
+    viewerClassnames: "max-w-xs mx-auto flex items-center justify-center",
     controls: {
       type: {
         type: "select",
