@@ -72,7 +72,9 @@ export function Sidebar({
       </div>
 
       <nav>
-        {Object.entries(components).map(([componentName, componentData]) => {
+        {Object.entries(components)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([componentName, componentData]) => {
           const isOpen = openComponents.has(componentName)
           const isSelected = selectedComponent === componentName
           const firstVariant = Object.keys(componentData.variants)[0]
