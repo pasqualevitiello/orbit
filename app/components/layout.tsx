@@ -19,12 +19,10 @@ export default function ComponentsLayout({
       </main>
       {/* Sidebar */}
       <div className="h-full w-80 overflow-y-auto border-r">
-        <div className="p-5">
-          <Sidebar
-            components={componentRegistry}
-            currentPath={pathname}
-          />
-        </div>
+        <Sidebar
+          components={componentRegistry}
+          currentPath={pathname}
+        />
       </div>
     </div>
   )

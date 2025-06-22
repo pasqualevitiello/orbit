@@ -57,10 +57,10 @@ export function Sidebar({
   }
 
   return (
-    <div className="sidebar bg-gray-50 p-4 overflow-y-auto">
+    <div className="p-5 font-sans">
       <div className="mb-6">
         <Link href="/" className="block">
-          <h1 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">Component Library</h1>
+          <h1 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">Orbit</h1>
         </Link>
         <p className="text-sm text-gray-600 mt-1">Browse and test your components</p>
       </div>

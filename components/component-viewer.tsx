@@ -92,7 +92,7 @@ export function ComponentViewer({ componentName, variantName }: ComponentViewerP
         minSize={15} 
         maxSize={50}
       >
-        <div className="h-full overflow-y-auto">
+        <div className="h-full overflow-y-auto font-sans">
           <div className="p-5">
             <ControlPanel 
               controls={componentData.controls || {}} 

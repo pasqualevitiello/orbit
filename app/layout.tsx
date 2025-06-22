@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://your-domain.com",
-    siteName: "Component Library",
+    siteName: "Orbit",
   },
   twitter: {
     card: "summary_large_image",
