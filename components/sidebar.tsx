@@ -10,8 +10,6 @@ interface SidebarProps {
   components: ComponentRegistry
   selectedComponent: string
   selectedVariant: string
-  onComponentSelect: (component: string) => void
-  onVariantSelect: (component: string, variant: string) => void
   currentPath: string
 }
 
@@ -19,8 +17,6 @@ export function Sidebar({
   components,
   selectedComponent,
   selectedVariant,
-  onComponentSelect,
-  onVariantSelect,
   currentPath,
 }: SidebarProps) {
   const [openComponents, setOpenComponents] = useState<Set<string>>(new Set([selectedComponent]))
@@ -35,10 +31,6 @@ export function Sidebar({
 
     if (isOpen) {
       newOpen.add(componentName)
-      // If opening and no child is active, go to first variant
-      if (selectedComponent !== componentName) {
-        onComponentSelect(componentName)
-      }
     } else {
       newOpen.delete(componentName)
     }
@@ -59,6 +51,7 @@ export function Sidebar({
         {Object.entries(components).map(([componentName, componentData]) => {
           const isOpen = openComponents.has(componentName)
           const isSelected = selectedComponent === componentName
+          const firstVariant = Object.keys(componentData.variants)[0]
 
           return (
             <Collapsible
@@ -67,7 +60,8 @@ export function Sidebar({
               onOpenChange={(open) => handleComponentToggle(componentName, open)}
             >
               <CollapsibleTrigger asChild>
-                <button
+                <Link
+                  href={`/components/${componentName}/${firstVariant}`}
                   className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-md transition-colors ${
                     isSelected ? "bg-blue-100 text-blue-900" : "text-gray-700 hover:bg-gray-100"
                   }`}
@@ -76,7 +70,7 @@ export function Sidebar({
                   <div className="p-1">
                     {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </div>
-                </button>
+                </Link>
               </CollapsibleTrigger>
 
               <CollapsibleContent className="ml-4 mt-1 space-y-1">

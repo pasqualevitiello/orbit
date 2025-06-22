@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Sidebar } from "@/components/sidebar"
 import { ComponentViewer } from "@/components/component-viewer"
 import { componentRegistry, ComponentRegistry } from "@/lib/components-registry"
@@ -11,20 +11,7 @@ interface ComponentLibraryProps {
 }
 
 export function ComponentLibrary({ initialComponent, initialVariant }: ComponentLibraryProps) {
-  const router = useRouter()
   const pathname = usePathname()
-
-  const handleComponentSelect = (component: string) => {
-    const componentData = componentRegistry[component as keyof ComponentRegistry]
-    if (componentData) {
-      const firstVariant = Object.keys(componentData.variants)[0]
-      router.push(`/components/${component}/${firstVariant}`)
-    }
-  }
-
-  const handleVariantSelect = (component: string, variant: string) => {
-    router.push(`/components/${component}/${variant}`)
-  }
 
   const componentData = componentRegistry[initialComponent as keyof ComponentRegistry]
 
@@ -45,8 +32,6 @@ export function ComponentLibrary({ initialComponent, initialVariant }: Component
         components={componentRegistry}
         selectedComponent={initialComponent}
         selectedVariant={initialVariant}
-        onComponentSelect={handleComponentSelect}
-        onVariantSelect={handleVariantSelect}
         currentPath={pathname}
       />
       </div>

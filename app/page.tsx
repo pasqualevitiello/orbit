@@ -1,5 +1,21 @@
+import { Metadata } from "next"
 import { componentRegistry } from "@/lib/components-registry";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Component Library | Next.js Storybook",
+  description: "A Storybook-like component library built with Next.js, featuring interactive component viewing and testing capabilities.",
+  openGraph: {
+    title: "Component Library | Next.js Storybook",
+    description: "A Storybook-like component library built with Next.js, featuring interactive component viewing and testing capabilities.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Component Library | Next.js Storybook",
+    description: "A Storybook-like component library built with Next.js, featuring interactive component viewing and testing capabilities.",
+  },
+}
 
 export default function Home() {
   return (

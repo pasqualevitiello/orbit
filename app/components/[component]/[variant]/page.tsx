@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation"
+import { Metadata } from "next"
 import { ComponentLibrary } from "@/components/component-library"
-import { componentRegistry } from "@/lib/components-registry"
+import { componentRegistry, ComponentRegistry } from "@/lib/components-registry"
 
 interface PageProps {
-  params: Promise<{
+  params: {
     component: string
     variant: string
-  }>
+  }
 }
 
 export async function generateStaticParams() {
@@ -24,26 +25,42 @@ export async function generateStaticParams() {
   return paths
 }
 
-export async function generateMetadata({ params }: PageProps) {
-  const { component, variant } = await params
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { component, variant } = params
 
-  if (!componentRegistry[component] || !componentRegistry[component].variants[variant]) {
+  // Type-safe component lookup
+  const componentData = componentRegistry[component as keyof ComponentRegistry]
+  if (!componentData || !componentData.variants[variant]) {
     return {
-      title: "Component Not Found",
+      title: "Component Not Found | Component Library",
+      description: "The requested component or variant could not be found.",
     }
   }
 
+  const variantData = componentData.variants[variant]
+  
   return {
     title: `${component} - ${variant} | Component Library`,
-    description: `${variant} variant of the ${component} component`,
+    description: variantData.description || `${variant} variant of the ${component} component`,
+    openGraph: {
+      title: `${component} - ${variant}`,
+      description: variantData.description || `${variant} variant of the ${component} component`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${component} - ${variant}`,
+      description: variantData.description || `${variant} variant of the ${component} component`,
+    },
   }
 }
 
-export default async function ComponentPage({ params }: PageProps) {
-  const { component, variant } = await params
+export default function ComponentPage({ params }: PageProps) {
+  const { component, variant } = params
 
-  // Check if component and variant exist
-  if (!componentRegistry[component] || !componentRegistry[component].variants[variant]) {
+  // Type-safe component lookup
+  const componentData = componentRegistry[component as keyof ComponentRegistry]
+  if (!componentData || !componentData.variants[variant]) {
     notFound()
   }
 
