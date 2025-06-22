@@ -4,10 +4,10 @@ import { ComponentLibrary } from "@/components/component-library"
 import { componentRegistry, ComponentRegistry } from "@/lib/components-registry"
 
 interface PageProps {
-  params: {
+  params: Promise<{
     component: string
     variant: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { component, variant } = params
+  const { component, variant } = await params
 
   // Type-safe component lookup
   const componentData = componentRegistry[component as keyof ComponentRegistry]
@@ -55,8 +55,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default function ComponentPage({ params }: PageProps) {
-  const { component, variant } = params
+export default async function ComponentPage({ params }: PageProps) {
+  const { component, variant } = await params
 
   // Type-safe component lookup
   const componentData = componentRegistry[component as keyof ComponentRegistry]
