@@ -78,7 +78,7 @@ export function Sidebar({
               open={isOpen}
               onOpenChange={(open) => handleComponentToggle(componentName, open)}
             >
-              <div className="-mx-3">
+              <div className="-mx-5">
                 <CollapsibleTrigger asChild>
                   <Button
                     data-selected={isSelected}
@@ -86,16 +86,16 @@ export function Sidebar({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleComponentClick(componentName, isOpen, firstVariant)}
-                    className="w-full justify-between group"
+                    className="w-full text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-7 data-[selected=true]:bg-muted"
                   >
                     <span className="font-medium truncate">{componentName}</span>
-                    {isOpen ? <ChevronsDownUpIcon className="text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
+                    {isOpen ? <ChevronsDownUpIcon className="size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
                   </Button>
                 </CollapsibleTrigger>
               </div>
 
               <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden ease-in-out duration-150">
-                <div className="flex flex-col gap-1 border-l my-2">
+                <div className="flex flex-col gap-1 border-l my-1">
                   {Object.keys(componentData.variants).map((variantName) => {
                     const href = `/components/${componentName}/${variantName}`
                     const isActive = currentPath === href
@@ -105,7 +105,7 @@ export function Sidebar({
                         key={variantName}
                         href={href}
                         aria-current={isActive ? "page" : undefined}
-                        className="inline-flex border-l border-transparent text-[13px] text-muted-foreground hover:border-foreground/25 aria-[current]:border-gray-950 aria-[current]:font-medium aria-[current]:text-foreground pl-4 -ml-px"
+                        className="inline-flex border-l border-transparent text-[13px] text-muted-foreground hover:border-foreground/25 aria-[current]:border-gray-950 aria-[current]:font-medium aria-[current]:text-foreground pl-3.5 -ml-px"
                       >
                         {variantName}
                       </Link>
