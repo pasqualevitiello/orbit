@@ -41,11 +41,11 @@ const Component = forwardRef<HTMLInputElement, SearchProps>(
           <Button
             variant="ghost"
             size="icon"
-            className="absolute inset-y-0.5 end-0.5 size-7 hover:bg-transparent text-muted-foreground/70 hover:text-foreground"
+            className="absolute inset-y-1 md:inset-y-0.5 end-1 md:end-0.5 size-7 hover:bg-transparent text-muted-foreground/70 hover:text-foreground"
             aria-label="Clear input"
             onClick={handleClearInput}
           >
-            <CircleXIcon className="size-3.5" aria-hidden="true" />
+            <CircleXIcon className="size-4 md:size-3.5" aria-hidden="true" />
           </Button>
         ) : (
           <div className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-2">

@@ -167,12 +167,12 @@ export function Sidebar({
                     className="w-full text-[15px] md:text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-8 md:h-7 not-focus-visible:not-data-[focused=true]:data-[selected=true]:bg-muted focus-visible:ring-0 focus-visible:bg-black/8 data-[focused=true]:bg-black/8"
                   >
                     <span className="font-medium truncate">{componentName}</span>
-                    {isOpen ? <ChevronsDownUpIcon className="size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
+                    {isOpen ? <ChevronsDownUpIcon className="size-4 md:size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-4 md:size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
                   </Button>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden ease-in-out duration-150">
-                  <div className="flex flex-col gap-1 relative my-1 before:absolute before:inset-y-0 before:start-5 before:border-l before:border-border">
+                  <div className="flex flex-col relative my-1 before:absolute before:inset-y-0 before:start-5 before:border-l before:border-border">
                     {Object.keys(componentData.variants).map((variantName) => {
                       const href = `/components/${componentName}/${variantName}`
                       const isActive = currentPath === href
@@ -182,7 +182,7 @@ export function Sidebar({
                           key={variantName}
                           href={href}
                           aria-current={isActive ? "page" : undefined}
-                          className="inline-flex relative before:absolute before:inset-y-0 before:start-5 before:border-l before:border-transparent hover:before:border-primary/25 text-[15px] md:text-[13px] text-muted-foreground aria-[current]:before:border-primary aria-[current]:font-medium aria-[current]:text-foreground ps-8.5 pe-5 focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
+                          className="inline-flex py-0.5 relative before:absolute before:inset-y-0 before:start-5 before:border-l before:border-transparent hover:before:border-primary/25 text-[15px] md:text-[13px] text-muted-foreground aria-[current]:before:border-primary aria-[current]:font-medium aria-[current]:text-foreground ps-8.5 pe-5 focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
                         >
                           {variantName}
                         </Link>
