@@ -28,6 +28,7 @@ export function Sidebar({
   const [openComponents, setOpenComponents] = useState<Set<string>>(new Set([selectedComponent]))
   const [searchQuery, setSearchQuery] = useState("")
   const [focusedIndex, setFocusedIndex] = useState(-1)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Update open components when selectedComponent changes
   useEffect(() => {
@@ -44,6 +45,19 @@ export function Sidebar({
       setFocusedIndex(-1)
     }
   }, [searchQuery])
+
+  // Global Cmd+K handler
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault()
+        searchInputRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleGlobalKeyDown)
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
 
   const handleComponentToggle = (componentName: string, isOpen: boolean) => {
     const newOpen = new Set(openComponents)
@@ -120,10 +134,15 @@ export function Sidebar({
       </div>
 
       <div className="px-5">
-        <Search value={searchQuery} onChange={setSearchQuery} onKeyDown={handleSearchKeyDown} />
+        <Search 
+          value={searchQuery} 
+          onChange={setSearchQuery} 
+          onKeyDown={handleSearchKeyDown}
+          ref={searchInputRef}
+        />
       </div>
 
-      {filteredComponents.length > 1 ? (
+      {filteredComponents.length !== 0 ? (
         <nav>
           {filteredComponents.map(([componentName, componentData], index) => {
             const isOpen = openComponents.has(componentName)
