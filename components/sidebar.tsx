@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronsUpDownIcon, ChevronsDownUpIcon } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -26,6 +26,8 @@ export function Sidebar({
   const selectedVariant = pathParts[3] || ''
 
   const [openComponents, setOpenComponents] = useState<Set<string>>(new Set([selectedComponent]))
+  const [searchQuery, setSearchQuery] = useState("")
+  const [focusedIndex, setFocusedIndex] = useState(-1)
 
   // Update open components when selectedComponent changes
   useEffect(() => {
@@ -33,6 +35,15 @@ export function Sidebar({
       setOpenComponents((prev) => new Set([...prev, selectedComponent]))
     }
   }, [selectedComponent])
+
+  // Reset focus when search query changes
+  useEffect(() => {
+    if (searchQuery) {
+      setFocusedIndex(0)
+    } else {
+      setFocusedIndex(-1)
+    }
+  }, [searchQuery])
 
   const handleComponentToggle = (componentName: string, isOpen: boolean) => {
     const newOpen = new Set(openComponents)
@@ -58,6 +69,47 @@ export function Sidebar({
     }
   }
 
+  // Handle keyboard navigation
+  const handleSearchKeyDown = (event: React.KeyboardEvent) => {
+    if (!searchQuery) return
+
+    const totalElements = filteredComponents.length
+    if (totalElements === 0) return
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault()
+        setFocusedIndex((prev) => (prev + 1) % totalElements)
+        break
+      case 'ArrowUp':
+        event.preventDefault()
+        setFocusedIndex((prev) => (prev - 1 + totalElements) % totalElements)
+        break
+      case 'Enter':
+        event.preventDefault()
+        if (focusedIndex >= 0 && focusedIndex < totalElements) {
+          const [componentName, componentData] = filteredComponents[focusedIndex]
+          const firstVariant = Object.keys(componentData.variants)[0]
+          router.push(`/components/${componentName}/${firstVariant}`)
+        }
+        break
+      case 'Escape':
+        setSearchQuery("")
+        setFocusedIndex(-1)
+        break
+    }
+  }
+
+  // Filter components based on search query
+  const filteredComponents = Object.entries(components)
+    .filter(([componentName, componentData]) => {
+      const query = searchQuery.toLowerCase()
+      
+      // Only check if component name matches
+      return componentName.toLowerCase().includes(query)
+    })
+    .sort(([a], [b]) => a.localeCompare(b))
+
   return (
     <div className="p-5 font-sans">
       <div className="mb-6">
@@ -68,16 +120,15 @@ export function Sidebar({
       </div>
 
       <div className="mb-6">
-        <Search />
+        <Search value={searchQuery} onChange={setSearchQuery} onKeyDown={handleSearchKeyDown} />
       </div>
 
       <nav>
-        {Object.entries(components)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([componentName, componentData]) => {
+        {filteredComponents.map(([componentName, componentData], index) => {
           const isOpen = openComponents.has(componentName)
           const isSelected = selectedComponent === componentName
           const firstVariant = Object.keys(componentData.variants)[0]
+          const isFocused = searchQuery && focusedIndex === index
 
           return (
             <Collapsible
@@ -90,10 +141,11 @@ export function Sidebar({
                   <Button
                     data-selected={isSelected}
                     data-open={isOpen}
+                    data-focused={isFocused}
                     variant="ghost"
                     size="sm"
                     onClick={() => handleComponentClick(componentName, isOpen, firstVariant)}
-                    className="w-full text-[15px] md:text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-8 md:h-7 data-[selected=true]:bg-muted"
+                    className="w-full text-[15px] md:text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-8 md:h-7 not-focus-visible:not-data-[focused=true]:data-[selected=true]:bg-muted focus-visible:ring-0 focus-visible:bg-input data-[focused=true]:bg-input"
                   >
                     <span className="font-medium truncate">{componentName}</span>
                     {isOpen ? <ChevronsDownUpIcon className="size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
@@ -112,7 +164,7 @@ export function Sidebar({
                         key={variantName}
                         href={href}
                         aria-current={isActive ? "page" : undefined}
-                        className="inline-flex border-l border-transparent text-[15px] md:text-[13px] text-muted-foreground hover:border-foreground/25 aria-[current]:border-gray-950 aria-[current]:font-medium aria-[current]:text-foreground pl-3.5 -ml-px"
+                        className="inline-flex border-l border-transparent text-[15px] md:text-[13px] text-muted-foreground hover:border-foreground/25 aria-[current]:border-gray-950 aria-[current]:font-medium aria-[current]:text-foreground pl-3.5 -ml-px focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
                       >
                         {variantName}
                       </Link>
