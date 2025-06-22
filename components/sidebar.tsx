@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ComponentRegistry } from "@/lib/components-registry"
+import Search from "@/components/search"
 
 interface SidebarProps {
   components: ComponentRegistry
@@ -66,6 +67,10 @@ export function Sidebar({
         <p className="text-sm text-gray-600 mt-1">Browse and test your components</p>
       </div>
 
+      <div className="mb-6">
+        <Search />
+      </div>
+
       <nav>
         {Object.entries(components).map(([componentName, componentData]) => {
           const isOpen = openComponents.has(componentName)
@@ -86,7 +91,7 @@ export function Sidebar({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleComponentClick(componentName, isOpen, firstVariant)}
-                    className="w-full text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-7 data-[selected=true]:bg-muted"
+                    className="w-full text-[15px] md:text-[13px] justify-between group rounded-none has-[>svg]:px-5 h-8 md:h-7 data-[selected=true]:bg-muted"
                   >
                     <span className="font-medium truncate">{componentName}</span>
                     {isOpen ? <ChevronsDownUpIcon className="size-3.5 text-muted-foreground" aria-hidden="true" /> : <ChevronsUpDownIcon className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />}
@@ -105,7 +110,7 @@ export function Sidebar({
                         key={variantName}
                         href={href}
                         aria-current={isActive ? "page" : undefined}
-                        className="inline-flex border-l border-transparent text-[13px] text-muted-foreground hover:border-foreground/25 aria-[current]:border-gray-950 aria-[current]:font-medium aria-[current]:text-foreground pl-3.5 -ml-px"
+                        className="inline-flex border-l border-transparent text-[15px] md:text-[13px] text-muted-foreground hover:border-foreground/25 aria-[current]:border-gray-950 aria-[current]:font-medium aria-[current]:text-foreground pl-3.5 -ml-px"
                       >
                         {variantName}
                       </Link>
