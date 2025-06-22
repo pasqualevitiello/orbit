@@ -28,12 +28,12 @@ export function CodeViewer({ componentName, props, code }: CodeViewerProps) {
   }
 
   return (
-    <div className="bg-gray-900 text-gray-100 p-4">
+    <div className="bg-black text-white p-4">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium">Code</h4>
         <button
           onClick={() => navigator.clipboard.writeText(generateCode())}
-          className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
+          className="text-xs bg-primary hover:bg-primary/90 px-2 py-1 rounded"
         >
           Copy
         </button>

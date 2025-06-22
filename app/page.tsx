@@ -31,10 +31,10 @@ export default function Home() {
               <Link
                 key={componentName}
                 href={`/components/${componentName}/${firstVariant}`}
-                className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition-colors"
+                className="block p-6 bg-white border rounded-lg shadow transition-colors"
               >
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">{componentName}</h2>
-                <p className="text-gray-600 text-sm">{Object.keys(componentData.variants).length} variants available</p>
+                <h2 className="text-xl font-semibold mb-2">{componentName}</h2>
+                <p className="text-muted-foreground text-sm">{Object.keys(componentData.variants).length} variants available</p>
               </Link>
             )
           })}

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { ControlPanel } from "@/components/control-panel"
 import { CodeViewer } from "@/components/code-viewer"
 import { ComponentData } from "@/lib/components-registry"
@@ -48,29 +49,21 @@ export function ComponentViewer({ componentName, variantName, componentData }: C
 
   if (!componentData || !variant || !Component) {
     return (
-      <div className="main-content flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Component not found</p>
-          <Link href="/" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
+          <p className="text-muted-foreground mb-4">Component not found</p>
+          <Button asChild>
+            <Link href="/">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </Link>
+          </Button>
         </div>
       </div>
     )
   }
 
-  // Show loading state while localStorage is being loaded
-  if (!isLoaded) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading layout...</p>
-        </div>
-      </div>
-    )
-  }
+  if (!isLoaded) return null
 
   return (
     <ResizablePanelGroup 

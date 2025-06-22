@@ -39,12 +39,12 @@ export function Sidebar({
   }
 
   return (
-    <div className="sidebar bg-gray-50 p-4 overflow-y-auto">
+    <div className="p-4 overflow-y-auto">
       <div className="mb-6">
         <Link href="/" className="block">
-          <h1 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">Component Library</h1>
+          <h1 className="text-xl font-bold">Component Library</h1>
         </Link>
-        <p className="text-sm text-gray-600 mt-1">Browse and test your components</p>
+        <p className="text-sm text-muted-foreground mt-1">Browse and test your components</p>
       </div>
 
       <nav className="space-y-1">
@@ -62,10 +62,8 @@ export function Sidebar({
               <CollapsibleTrigger asChild>
                 <Link
                   href={`/components/${componentName}/${firstVariant}`}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-md transition-colors ${
-                    isSelected ? "bg-blue-100 text-blue-900" : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
+                  data-selected={isSelected}
+                  className="w-full flex items-center justify-between px-3 py-2 text-left rounded-md transition-colors data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground">
                   <span className="font-medium">{componentName}</span>
                   <div className="p-1">
                     {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -82,9 +80,8 @@ export function Sidebar({
                     <Link
                       key={variantName}
                       href={href}
-                      className={`block w-full text-left px-3 py-1 text-sm rounded transition-colors ${
-                        isActive ? "bg-blue-50 text-blue-800" : "text-gray-600 hover:bg-gray-50"
-                      }`}
+                      data-selected={isActive}
+                      className="block w-full text-left px-3 py-1 text-sm rounded transition-colors data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
                     >
                       {variantName}
                     </Link>
