@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export interface ComponentVariant {
   props: Record<string, any>
@@ -81,6 +82,64 @@ export const componentRegistry: ComponentRegistry = {
       Disabled: {
         props: { children: "Disabled Button", disabled: true },
         description: "Disabled button state",
+      },
+    },
+  },
+  Input: {
+    component: Input,
+    controls: {
+      type: {
+        type: "select",
+        label: "Type",
+        options: ["text", "email", "password", "number", "tel", "url", "search", "file"],
+      },
+      placeholder: {
+        type: "text",
+        label: "Placeholder",
+        placeholder: "Enter placeholder text",
+      },
+      disabled: {
+        type: "boolean",
+        label: "Disabled",
+      },
+      value: {
+        type: "text",
+        label: "Value",
+        placeholder: "Enter input value",
+      },
+    },
+    variants: {
+      Default: {
+        props: { placeholder: "Enter text..." },
+        description: "Default input field",
+      },
+      Email: {
+        props: { type: "email", placeholder: "Enter your email" },
+        description: "Email input field",
+      },
+      Password: {
+        props: { type: "password", placeholder: "Enter your password" },
+        description: "Password input field",
+      },
+      Search: {
+        props: { type: "search", placeholder: "Search..." },
+        description: "Search input field",
+      },
+      Number: {
+        props: { type: "number", placeholder: "Enter a number" },
+        description: "Number input field",
+      },
+      File: {
+        props: { type: "file" },
+        description: "File upload input",
+      },
+      Disabled: {
+        props: { placeholder: "Disabled input", disabled: true },
+        description: "Disabled input field",
+      },
+      WithDefaultValue: {
+        props: { defaultValue: "Hello World", placeholder: "Enter text..." },
+        description: "Input with pre-filled value",
       },
     },
   },
