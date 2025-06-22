@@ -184,7 +184,7 @@ export function Sidebar({
               </CollapsibleTrigger>
 
               <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden ease-in-out duration-150">
-                <div className="flex flex-col gap-1 relative my-1 before:absolute before:inset-y-0 before:start-5 before:border-l before:border-border">
+                <div className="flex flex-col relative my-1 before:absolute before:inset-y-0 before:start-5 before:border-l before:border-border">
                   {Object.keys(componentData.variants).map((variantName) => {
                     const href = `/components/${componentName}/${variantName}`
                     const isActive = currentPath === href
@@ -194,7 +194,7 @@ export function Sidebar({
                         key={variantName}
                         href={href}
                         aria-current={isActive ? "page" : undefined}
-                        className="inline-flex relative before:absolute before:inset-y-0 before:start-5 before:border-l before:border-transparent hover:before:border-primary/25 text-[15px] md:text-[13px] text-muted-foreground aria-[current]:before:border-primary aria-[current]:font-medium aria-[current]:text-foreground ps-8.5 pe-5 focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
+                        className="inline-flex hover:text-foreground relative before:absolute before:inset-y-0 before:start-5 before:border-l before:border-transparent hover:before:border-primary/25 text-[15px] md:text-[13px] text-muted-foreground aria-[current]:before:border-primary aria-[current]:font-medium aria-[current]:text-foreground ps-8.5 pe-5 py-0.5 focus-visible:outline-none focus-visible:border-foreground/25 focus-visible:bg-muted"
                       >
                         {variantName}
                       </Link>
@@ -204,15 +204,13 @@ export function Sidebar({
               </CollapsibleContent>
             </Collapsible>
           )
-        })}
-        
-        {searchQuery && filteredComponents.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">No components found</p>
-            <p className="text-xs text-muted-foreground/70 mt-1">Try a different search term</p>
-          </div>
-        )}
+        })}   
       </nav>
+      {searchQuery && filteredComponents.length === 0 && (
+        <div className="text-center px-5">
+          <p className="text-[13px] text-muted-foreground">No components found</p>
+        </div>
+      )}
     </div>
   )
 }

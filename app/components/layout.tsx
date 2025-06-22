@@ -18,7 +18,7 @@ export default function ComponentsLayout({
         {children}
       </main>
       {/* Sidebar */}
-      <div className="h-full w-80 overflow-y-auto border-r">
+      <div className="h-full w-68 overflow-y-auto border-r">
         <Sidebar
           components={componentRegistry}
           currentPath={pathname}

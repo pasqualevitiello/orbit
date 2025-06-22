@@ -51,7 +51,7 @@ export default function Component({ value, onChange, onKeyDown }: SearchProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="absolute inset-y-0.5 end-0.5 size-7 hover:bg-transparent text-muted-foreground/80 hover:text-foreground"
+          className="absolute inset-y-0.5 end-0.5 size-7 hover:bg-transparent text-muted-foreground/70 hover:text-foreground"
           aria-label="Clear input"
           onClick={handleClearInput}
         >
