@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { ComponentLibrary } from "@/components/component-library"
+import { ComponentViewer } from "@/components/component-viewer"
 import { componentRegistry, ComponentRegistry } from "@/lib/components-registry"
 
 interface PageProps {
@@ -64,5 +64,5 @@ export default async function ComponentPage({ params }: PageProps) {
     notFound()
   }
 
-  return <ComponentLibrary initialComponent={component} initialVariant={variant} />
+  return <ComponentViewer componentName={component} variantName={variant} />
 }

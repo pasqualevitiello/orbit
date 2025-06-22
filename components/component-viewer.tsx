@@ -6,14 +6,13 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ControlPanel } from "@/components/control-panel"
 import { CodeViewer } from "@/components/code-viewer"
-import { ComponentData } from "@/lib/components-registry"
+import { componentRegistry, ComponentRegistry } from "@/lib/components-registry"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import { useLocalStorage } from "@/lib/hooks/use-local-storage"
 
 interface ComponentViewerProps {
   componentName: string
   variantName: string
-  componentData: ComponentData
 }
 
 interface PanelSizes {
@@ -26,7 +25,9 @@ const DEFAULT_PANEL_SIZES: PanelSizes = {
   controlPanel: 20
 }
 
-export function ComponentViewer({ componentName, variantName, componentData }: ComponentViewerProps) {
+export function ComponentViewer({ componentName, variantName }: ComponentViewerProps) {
+  // Look up component data from registry
+  const componentData = componentRegistry[componentName as keyof ComponentRegistry]
   const variant = componentData?.variants[variantName]
   const Component = componentData?.component
   
