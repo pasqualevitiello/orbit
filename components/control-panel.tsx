@@ -15,7 +15,7 @@ export function ControlPanel({ controls, values, onChange }: ControlPanelProps) 
 
   if (Object.keys(controls).length === 0) {
     return (
-      <div className="controls-panel p-4">
+      <div className="p-4">
         <h3 className="font-semibold text-gray-900 mb-2">Controls</h3>
         <p className="text-sm text-gray-500">No controls available</p>
       </div>
@@ -23,7 +23,7 @@ export function ControlPanel({ controls, values, onChange }: ControlPanelProps) 
   }
 
   return (
-    <div className="controls-panel p-4">
+    <div className="p-4">
       <h3 className="font-semibold text-gray-900 mb-4">Controls</h3>
       <div className="space-y-4">
         {Object.entries(controls).map(([key, control]) => (

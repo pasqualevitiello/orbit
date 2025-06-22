@@ -89,7 +89,7 @@ export function ComponentViewer({ componentName, variantName, componentData }: C
       </ResizablePanel>
 
       {/* Resizable handle */}
-      <ResizableHandle withHandle />
+      <ResizableHandle />
 
       {/* Inspector - resizable control panel */}
       <ResizablePanel 
@@ -97,7 +97,7 @@ export function ComponentViewer({ componentName, variantName, componentData }: C
         minSize={15} 
         maxSize={50}
       >
-        <div className="h-full overflow-y-auto border-t">
+        <div className="h-full overflow-y-auto">
           <div className="p-5">
             <ControlPanel 
               controls={componentData.controls || {}} 
