@@ -153,6 +153,10 @@ export const componentRegistry: ComponentRegistry = {
         props: { defaultValue: "Hello World", placeholder: "Enter text..." },
         description: "Input with pre-filled value",
       },
+      Invalid: {
+        props: { placeholder: "Enter text...", "aria-invalid": "true" },
+        description: "Input with aria-invalid for accessibility",
+      },
     },
   },
   Card: {
