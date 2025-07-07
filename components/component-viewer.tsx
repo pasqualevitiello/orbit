@@ -87,14 +87,14 @@ export function ComponentViewer({ componentName, variantName }: ComponentViewerP
             </defs>
               <rect fill="url(#diagonal-lines)" width="100%" height="100%" stroke="none" />
           </svg> */}
-          <svg fill="none" className="text-foreground/10 absolute inset-0 size-full">
+          {/* <svg fill="none" className="text-foreground/10 absolute inset-0 size-full">
             <defs>
               <pattern x="0" y="0" id="texture" width="4" height="4" patternUnits="userSpaceOnUse">
                 <path d="M1 3h1v1H1V3zm2-2h1v1H3V1z" fill="currentColor" />
               </pattern>
             </defs>
               <rect fill="url(#texture)" width="100%" height="100%" stroke="none" />
-          </svg>          
+          </svg>           */}
           {/* <svg fill="none" className="text-foreground/8 absolute inset-0 size-full">
             <defs>
               <pattern x="0" y="0" id="tiny-checkers" width="8" height="8" patternUnits="userSpaceOnUse">
